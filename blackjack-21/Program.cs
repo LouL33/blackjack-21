@@ -7,38 +7,42 @@ using System.Threading.Tasks;
 namespace blackjack_21
 {
     class Program
-    {   /*
-        static int HitOrStand (string message)
+    {   
+        static List<Card> RandomDeck = new List<Card>();
+
+        static List<Card> AddCardsTo(List<Card> hand)
         {
-            var input = message;
-            int number = 0;
-            bool wasFormatCorrect = int.TryParse(input, out number);
-            while (!wasFormatCorrect)
-            {
-                Console.WriteLine("enter 1 or 2 fool, not a word");
-                input = Console.ReadLine();
-                wasFormatCorrect = int.TryParse(input, out number);
-            }
-            return number;
+            hand.Add(RandomDeck[0]);
+            RandomDeck.RemoveAt(0);
+            return hand;
         }
-        */
+
+        static void DisplayHand(List<Card> hand)
+        {
+            foreach (var card in hand)
+            {
+                Console.WriteLine(card);
+            }
+        }
+
+        static void DisplayHandTotal(List<Card> hand)
+        {
+            var total = 0;
+            foreach (var card in hand)
+            {
+                total += card.GetCardValue();
+            }
+            Console.WriteLine($"Your total is : {total}");
+        }
+
         static int GetHandTotal(List<Card> hand)
         {
             var total = 0;
             foreach (var card in hand)
             {
                 total += card.GetCardValue();
-               
             }
             return total;
-        }
-
-        static void Displayhand(List<Card> hand)
-        {
-            foreach (var card in hand)
-            {
-                Console.WriteLine(card);
-            }
         }
 
         static void Main(string[] args)
@@ -53,57 +57,66 @@ namespace blackjack_21
                 }
             }
             //sort the deck. NOTICE that the variable 'deck' is unchanged, but 'randomDeck' is the actual sorted deck.
-            var randomDeck = deck.OrderBy(x => Guid.NewGuid()).ToList();
+            RandomDeck = deck.OrderBy(x => Guid.NewGuid()).ToList();
 
-            // greeding message
-            var hitOrStand = 0;
-
-            // making both hands
-            //dislay the total
-            // ask the user if they want to hit or stay
-            // while the user wants to hit:
-            // deal user a card
-            // dealers turn
             var playerHand = new List<Card>();
-
-
-            var tempcard = randomDeck[0];
-            playerHand.Add(tempcard);
-            randomDeck.RemoveAt(0);
-
-            tempcard = randomDeck[0];
-            playerHand.Add(tempcard);
-            randomDeck.RemoveAt(0);
-
-            Displayhand(playerHand);
-
-            
             var dealerHand = new List<Card>();
 
-            tempcard = randomDeck[0];
-            dealerHand.Add(tempcard);
-            randomDeck.RemoveAt(0);
+            playerHand = AddCardsTo(playerHand);
+            playerHand = AddCardsTo(playerHand);
+            dealerHand = AddCardsTo(dealerHand);
+            dealerHand = AddCardsTo(dealerHand);
 
-            tempcard = randomDeck[0];
-            dealerHand.Add(tempcard);
-            randomDeck.RemoveAt(0);
-
-            Displayhand(dealerHand);
+            //DisplayHand( new Card[9]);***************************
+            // DisplayHand(dealerHand.Take(1));
 
 
-           // Console.WriteLine("would you like to stay or hit? enter 1 for hit or 2 for stay");
-            //hitOrStand = HitOrStand(Console.ReadLine());
+            //DisplayHand(playerHand);
+            Console.WriteLine("Dealers hand:");
+            Console.WriteLine(dealerHand[0]);
 
-            bool startgame = false;
-            string hit;
-            string stay;
-            int playershandzzzz;
+            var stilPlaying = true;
 
-            //Console.WriteLine("would you like to stay or hit? (type hit/stay)");
-            //hit = Console.ReadLine();
+            while (stilPlaying && GetHandTotal(playerHand) < 21)
+            {
+                Console.WriteLine("your hand");
+                DisplayHand(playerHand);
+                DisplayHandTotal(playerHand);
+                Console.WriteLine();
+                Console.WriteLine("[H]it or [S]tay");
+                var input = Console.ReadLine();
 
-            playerHand[0].GetCardValue();
-            playerHand[1].GetCardValue();
+                if (input.ToLower() == "h")
+                {
+                    playerHand = AddCardsTo(playerHand);
+                }
+                else if (input.ToLower() == "s")
+                {
+                    stilPlaying = false;
+                }
+
+
+            }
+            Console.WriteLine($"you are done play with a {GetHandTotal(playerHand)}");
+
+
+
+            Console.WriteLine("Dealer turn");
+            DisplayHand(dealerHand);
+            DisplayHandTotal(dealerHand);
+            while (GetHandTotal(dealerHand) <= 16)
+            {
+                dealerHand = AddCardsTo(dealerHand);
+                Console.WriteLine("Dealers New Hand");
+                DisplayHand(dealerHand);
+            }
+            Console.WriteLine();
+
+            Console.WriteLine($"Dealer has {GetHandTotal(dealerHand)}");
+
+            Console.WriteLine($"player has {GetHandTotal(playerHand)}");
+
+
 
 
 
